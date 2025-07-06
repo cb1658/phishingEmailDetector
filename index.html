@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    #input-container {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    #fixed-box {
+      position: absolute;
+      bottom: 20px;
+      left: 20px;
+      background: #eee;
+      padding: 8px 12px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      font-family: Arial, sans-serif;
+      font-size: 8px;
+      user-select: none;  
+    }
+
+    #response-container {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      max-width: 400px;
+      font-family: Arial, sans-serif;
+      background: #f9f9f9;
+      padding: 10px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      white-space: pre-wrap;
+    }
+
+    input {
+      padding: 6px;
+      font-size: 14px;
+      width: 240px;
+    }
+
+    button {
+      padding: 6px 12px;
+      font-size: 14px;
+      cursor: pointer;
+      width: 100px;
+    }
+  </style>
+</head>
+<body>
+  <div id="input-container">
+
+    <input type="text" id="userApiKey" placeholder="Insert OpenAI Key">
+
+    <input type="text" id="userInput" placeholder="ChatGPT prompt">
+    <button id="submitBtn">Submit</button>
+  </div>
+
+  <div id="response-container">
+    Response will appear here.
+  </div>
+
+  <div id="fixed-box">
+    GPT-4.1-nano
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const apiKeyInput  = document.getElementById('userApiKey');
+      const promptInput  = document.getElementById('userInput');
+      const submitBtn    = document.getElementById('submitBtn');
+      const responseBox  = document.getElementById('response-container');
+
+      submitBtn.addEventListener('click', () => {
+
+        const key    = apiKeyInput.value.trim();
+        const prompt = promptInput.value.trim();
+
+        // apiKeyInput.value = '';
+        promptInput.value = '';
+
+        if (!key) {
+          responseBox.textContent = "=Please paste your OpenAI API key first";
+          return;
+        }
+        if (!prompt) {
+          responseBox.textContent = "Please type a prompt";
+          return;
+        }
+
+        responseBox.textContent = "Thinking…";
+
+        fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type":  "application/json",
+            "Authorization": `Bearer ${key}`
+          },
+          body: JSON.stringify({
+            model: "gpt-4.1-nano",
+            messages: [{role: "system",content: "You need to design a fake phishing email per the specifications provided by the user."},     { role: "user", content: prompt }],
+            max_tokens: 500
+          })
+        })
+        .then(res => {
+          if (!res.ok) throw new Error("Network response was not ok");
+          return res.json();
+        })
+        .then(data => {
+          const choice = data.choices && data.choices[0];
+          if (choice?.message?.content) {
+            responseBox.textContent = choice.message.content.trim();
+          } else {
+            responseBox.textContent = "No response available";
+          }
+        })
+        .catch(err => {
+          responseBox.textContent = "Error fetching response";
+          console.error("Fetch error:", err);
+        });
+      });
+    });
+  </script>
+</body>
+</html>
