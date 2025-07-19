@@ -115,9 +115,9 @@
 
           if (!firstReply) throw new Error("First response is empty");
 
-          responseBox.textContent = "🧠 Running second prompt with custom instructions...";
+          responseBox.textContent = "Running second prompt...";
 
-          const customInstruction = `Rate the explanation as to why a given message is a phishing scam email or not:\n\n${firstReply}`;
+          const customInstruction = `Rate the explanation as to why a given message is a phishing scam email or not out of 10:\n\n${firstReply}`;
 
           const res2 = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
