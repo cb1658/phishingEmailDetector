@@ -117,7 +117,7 @@
 
           responseBox.textContent = "Running second prompt...";
 
-          const customInstruction = `Rate the explanation as to why a given message is a phishing scam email or not out of 10:\n\n${firstReply}`;
+          const customInstruction = `Rate the explanation as to why a given message is a phishing scam email or not out of 10:\n\n${firstReply} Just say the number out of 10`;
 
           const res2 = await fetch("https://api.openai.com/v1/chat/completions", {
             method: "POST",
